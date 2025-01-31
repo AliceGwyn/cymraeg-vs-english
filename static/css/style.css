@@ -1,0 +1,19 @@
+.map-container {
+  border: 4px solid #000;  /* Add a black border */
+  border-radius: 8px;      /* Rounded corners */
+  height: 700px;           /* Fixed height for the map */
+  width: 100%;             /* Full width */
+  position: relative;       /* Position for map elements */
+  overflow: hidden;        /* Prevent overflow */
+}
+
+#map {
+  height: 100%;   /* Full height of the container */
+  width: 100%;    /* Full width of the container */
+}
+
+#legend {
+  background-color: white;
+  padding: 10px;
+  border: 1px solid gray;
+}
