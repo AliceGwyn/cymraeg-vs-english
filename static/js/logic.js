@@ -142,10 +142,9 @@ let url = "https://datamap.gov.wales/geoserver/ows?service=WFS&version=1.0.0&req
 const url2011 = "https://datamap.gov.wales/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typename=geonode%3Awelsh_by_lsoa&outputFormat=json&srs=EPSG%3A27700&srsName=EPSG%3A27700";
 const url2021 = "https://datamap.gov.wales/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typename=geonode%3Awelsh_language_2021&outputFormat=json&srs=EPSG%3A27700&srsName=EPSG%3A27700";
 
-let currentLegend;
+let legend;
 
 function display2021Data() {
-
   d3.json(url2021).then(function(data) {
     let transformedGeoJSON = transformGeoJSONCoords(data);
 
@@ -161,81 +160,29 @@ function display2021Data() {
         },
         onEachFeature: function (feature, layer) {
           layer.on({
-          // Change opacity on mouseover/mouseout
-          mouseover: function(event) {
-            layer = event.target;
-            layer.setStyle({
-              fillOpacity: 0.9
-            });
-          },
-          mouseout: function(event) {
-            layer = event.target;
-            layer.setStyle({
-              fillOpacity: 0.5
-            });
-          }
-        });
-        // Give each LSOA a popup with information
-        layer.bindPopup('<h1>' + feature.properties.lsoaname + '</h1><br><h2>Welsh Speakers: <strong>' + feature.properties.percentage + '%</strong></h2>');
+            // Change opacity on mouseover/mouseout
+            mouseover: function(event) {
+              layer = event.target;
+              layer.setStyle({
+                fillOpacity: 0.9
+              });
+            },
+            mouseout: function(event) {
+              layer = event.target;
+              layer.setStyle({
+                fillOpacity: 0.5
+              });
+            }
+          });
+          // Give each LSOA a popup with information
+          layer.bindPopup('<h1>' + feature.properties.lsoaname + '</h1><br><h2>Welsh Speakers: <strong>' + feature.properties.percentage + '%</strong></h2>');
         }
       }).addTo(myMap);
       
       // Set up the legend.
-      if (currentLegend instanceof L.control) {
-        myMap.removeControl(currentLegend)}; 
-      let currentLegend = L.control({position: "bottomright"});
-      currentLegend.onAdd = function() {
-      let div = L.DomUtil.create("div", "info legend");
-      let limits = geoJSON.options.limits;
-      let colors = geoJSON.options.colors;
-      let labels = [];
-
-      // Add the minimum and maximum.
-      let legendInfo = "<h1>Percentage of Welsh Speakers<br />(ages 3 and up)</h1>" +
-        "<div class=\"labels\">" +
-          "<div class=\"min\">" + limits[0] + "</div>" +
-          "<div class=\"max\">" + limits[limits.length - 1] + "</div>" +
-        "</div>";
-
-      div.innerHTML = legendInfo;
-
-      limits.forEach(function(limit, index) {
-        labels.push("<li style=\"background-color: " + colors[index] + "\"></li>");
-      });
-
-      div.innerHTML += "<ul>" + labels.join("") + "</ul>";
-      return div;
-    };
-
-    // Adding the legend to the map
-    currentLegend.addTo(myMap);  
-    
-})};
-
-function display2011Data() {
-  clearMapData();
-  d3.json(url2011).then(function(data) {
-    let transformedGeoJSON = transformGeoJSONCoords(data);
-
-      let geoJSON = L.choropleth(transformedGeoJSON, {
-        valueProperty: "Welsh",
-        scale: ["#00b140", "#c8102e"],
-        steps: 12,
-        mode: "q",
-        style: {
-          color: "#fff",
-          weight: 1,
-          fillOpacity: 0.5
-        },
-        onEachFeature: function (feature, layer) {
-            layer.bindPopup('<strong>' + feature.properties.lsoaname + '</strong><br>Percentage of Welsh Speakers: ' + feature.properties.Welsh);
-        }
-      }).addTo(myMap);
-      
-      // Set up the legend.
-      if (currentLegend instanceof L.control) {
-        myMap.removeControl(currentLegend)}; 
-      let currentLegend = L.control({position: "bottomright"});
+      if (legend instanceof L.control) {
+        myMap.removeControl(legend)}; 
+      legend = L.control({position: "bottomright"});
       legend.onAdd = function() {
       let div = L.DomUtil.create("div", "info legend");
       let limits = geoJSON.options.limits;
@@ -260,7 +207,74 @@ function display2011Data() {
     };
 
     // Adding the legend to the map
-    currentLegend.addTo(myMap);  
+    legend.addTo(myMap);  
+    
+})};
+
+function display2011Data() {
+  d3.json(url2011).then(function(data) {
+    let transformedGeoJSON = transformGeoJSONCoords(data);
+
+      let geoJSON = L.choropleth(transformedGeoJSON, {
+        valueProperty: "Welsh",
+        scale: ["#00b140", "#c8102e"],
+        steps: 12,
+        mode: "q",
+        style: {
+          color: "#fff",
+          weight: 1,
+          fillOpacity: 0.5
+        },
+        onEachFeature: function (feature, layer) {
+          layer.on({
+            // Change opacity on mouseover/mouseout
+            mouseover: function(event) {
+              layer = event.target;
+              layer.setStyle({
+                fillOpacity: 0.9
+              });
+            },
+            mouseout: function(event) {
+              layer = event.target;
+              layer.setStyle({
+                fillOpacity: 0.5
+              });
+            }
+          });
+          // Give each LSOA a popup with information
+          layer.bindPopup('<h1>' + feature.properties.LSOA11NM + '</h1><br><h2>Welsh Speakers: <strong>' + feature.properties.Welsh + '%</strong></h2>');
+        }
+      }).addTo(myMap);
+      
+      // Set up the legend.
+      if (legend instanceof L.control) {
+        myMap.removeControl(legend)}; 
+      legend = L.control({position: "bottomright"});
+      legend.onAdd = function() {
+      let div = L.DomUtil.create("div", "info legend");
+      let limits = geoJSON.options.limits;
+      let colors = geoJSON.options.colors;
+      let labels = [];
+
+      // Add the minimum and maximum.
+      let legendInfo = "<h1>Percentage of Welsh Speakers<br />(ages 3 and up)</h1>" +
+        "<div class=\"labels\">" +
+          "<div class=\"min\">" + limits[0] + "</div>" +
+          "<div class=\"max\">" + limits[limits.length - 1] + "</div>" +
+        "</div>";
+
+      div.innerHTML = legendInfo;
+
+      limits.forEach(function(limit, index) {
+        labels.push("<li style=\"background-color: " + colors[index] + "\"></li>");
+      });
+
+      div.innerHTML += "<ul>" + labels.join("") + "</ul>";
+      return div;
+    };
+
+    // Adding the legend to the map
+    legend.addTo(myMap);  
     
 })};
 
