@@ -175,6 +175,9 @@ d3.json(url).then(function(data) {
     
     // Need to adjust location of legend!
     // Set up the legend.
+  if (legend instanceof L.control) {
+    myMap.removeControl(legend)
+  };
   let legend = L.control({position: "bottomright"});
   legend.onAdd = function() {
     let div = L.DomUtil.create("div", "info legend");
