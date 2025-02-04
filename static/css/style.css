@@ -50,3 +50,13 @@
   font: 24px Arial, Helvetica, sans-serif;
   text-align: center;
 }
+
+#map h1 {
+  font: 20px Arial, Helvetica, sans-serif;
+  text-align: center;
+}
+
+#map h2 {
+  font: 16px Arial, Helvetica, sans-serif;
+  text-align: center;
+}

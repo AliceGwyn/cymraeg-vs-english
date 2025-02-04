@@ -1,3 +1,4 @@
+// Define CRS conversions for Proj4
 proj4.defs("EPSG:27700", "+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +datum=OSGB36 +units=m +no_defs");
 proj4.defs("EPSG:4326", "+proj=longlat +datum=WGS84 +no_defs");
 
@@ -5,6 +6,7 @@ function transformCoords(coords) {
     return proj4("EPSG:27700", "EPSG:4326", coords);
 }
 
+// Transform British National Grid coordinates to World Geodetic System
 function transformGeoJSONCoords(geojson) {
   geojson.features.forEach(function(feature) {
     if (feature.geometry.type === 'MultiPolygon') {
@@ -18,44 +20,31 @@ function transformGeoJSONCoords(geojson) {
   console.log('Transformed GeoJSON:', geojson);
   return geojson;
 }
-/*
-let layersPrimary = {
-  ["English medium"]: new L.LayerGroup(), 
-  ["Welsh medium"]: new L.LayerGroup(), 
-  ["Dual stream"]: new L.LayerGroup(),
-  ["English with significant Welsh"]: new L.LayerGroup(),
-  Transitional: new L.LayerGroup()
-};
-*/
+
+// Define map
 let myMap = L.map('map', {
   center:[52.1307, -3.7837],
-  zoom: 8,
-  /*
-  layers: [
-    layersPrimary["English medium"],
-    layersPrimary["Welsh medium"],
-    layersPrimary["Dual stream"],
-    layersPrimary["English with significant Welsh"],
-    layersPrimary.Transitional
-  ]
-    */
+  zoom: 8
 });
 
+// Add background tileset to map
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   maxZoom: 19
 }).addTo(myMap);
 
+// Initialized Marker Cluster Group
 var markerClusterGroup = L.markerClusterGroup();
 myMap.addLayer(markerClusterGroup);
 
-
+// Define Marker Cluster SubGroups
 let EngSub = L.featureGroup.subGroup(markerClusterGroup);
 let WelshSub = L.featureGroup.subGroup(markerClusterGroup);
 let DualSub = L.featureGroup.subGroup(markerClusterGroup);
 let EngSigWelshSub = L.featureGroup.subGroup(markerClusterGroup);
 let TransitionalSub = L.featureGroup.subGroup(markerClusterGroup);
 
+// Set icons
 let icons = {
   ["English medium"]: L.ExtraMarkers.icon({
     icon: "ion-happy-outline",
@@ -89,60 +78,51 @@ let icons = {
   })
 };
 
-//let languagePrimary;
-
+// Pull school data
 let primarySchools = "./static/js/cymraeg_primary_schools.json";
+
 // Get the data with d3.
 d3.json(primarySchools).then(function(data) {
-// console.log(data);
-//if (data.features[i].properties.language == "English medium") {
-//  languagePrimary = ""
-//}
-// Create a new marker cluster group.
-  //let markers = L.markerClusterGroup();
-  // Loop through the data.
+ console.log("School Data:", data);
   for (let i = 0; i < data.features.length; i++) {
     // Set the data location property to a variable.
     let location = [data.features[i].properties.lat, data.features[i].properties.lon];
-    // Add a new marker to the cluster group, and bind a popup.
-    // console.log(data.features[i].properties.language)
-    //L.marker(location, {icon: icons[data.features[i].properties.language]})
-    //.bindPopup(`${data.features[i].properties.name}<br>${data.features[i].properties.language}<br>${data.features[i].properties.town_name}`)
-    // markerClusterGroup.addLayer(newMarker);
+    // Add markers to SubGroups based on language used
     if (data.features[i].properties.language.toLowerCase() === "english medium") {
       L.marker(location, {icon: icons[data.features[i].properties.language]})
       .bindPopup(`${data.features[i].properties.name}<br>${data.features[i].properties.language}<br>${data.features[i].properties.town_name}`)
       .addTo(EngSub);
     } else if (data.features[i].properties.language.toLowerCase() === "welsh medium") {
       L.marker(location, {icon: icons[data.features[i].properties.language]})
-      .bindPopup(`${data.features[i].properties.name}<br>${data.features[i].properties.language}<br>${data.features[i].properties.town_name}`)
+      .bindPopup(`<h1>Name: ${data.features[i].properties.name}</h1><br><h2 style="color:red;">Language: ${data.features[i].properties.language}<br>Location: ${data.features[i].properties.town_name}</h2>`)
       .addTo(WelshSub);
     } else if (data.features[i].properties.language === "Dual stream") {
       L.marker(location, {icon: icons[data.features[i].properties.language]})
-      .bindPopup(`${data.features[i].properties.name}<br>${data.features[i].properties.language}<br>${data.features[i].properties.town_name}`)
+      .bindPopup(`<h1>Name: ${data.features[i].properties.name}</h1><br><h2 style="color:red;">Language: ${data.features[i].properties.language}<br>Location: ${data.features[i].properties.town_name}</h2>`)
       .addTo(DualSub);
     } else if (data.features[i].properties.language === "English with significant Welsh") {
       L.marker(location, {icon: icons[data.features[i].properties.language]})
-      .bindPopup(`${data.features[i].properties.name}<br>${data.features[i].properties.language}<br>${data.features[i].properties.town_name}`)
+      .bindPopup(`<h1>Name: ${data.features[i].properties.name}</h1><br><h2 style="color:red;">Language: ${data.features[i].properties.language}<br>Location: ${data.features[i].properties.town_name}</h2>`)
       .addTo(EngSigWelshSub);
     } else if (data.features[i].properties.language === "Transitional") {
       L.marker(location, {icon: icons[data.features[i].properties.language]})
-      .bindPopup(`${data.features[i].properties.name}<br>${data.features[i].properties.language}<br>${data.features[i].properties.town_name}`)
+      .bindPopup(`<h1>Name: ${data.features[i].properties.name}</h1><br><h2 style="color:red;">Language: ${data.features[i].properties.language}<br>Location: ${data.features[i].properties.town_name}</h2>`)
       .addTo(TransitionalSub);
     } else {
       console.log(data.features[i].properties)
-    }
-    }
+    }}
     // Add our marker cluster layer to the map.
     markerClusterGroup.addTo(myMap);
 });
 
+// Add Marker SubGroups to map
 myMap.addLayer(EngSub);
 myMap.addLayer(WelshSub);
 myMap.addLayer(DualSub);
 myMap.addLayer(EngSigWelshSub);
 myMap.addLayer(TransitionalSub);
 
+// Define selectable options for marker layers
 let overlays = {
   "English Medium": EngSub,
   "Welsh Medium": WelshSub,
@@ -154,10 +134,11 @@ let overlays = {
 L.control.layers(null, overlays).addTo(myMap);
 
 
-
+// Pull data from Welsh Census
 let url = "https://datamap.gov.wales/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typename=geonode%3Awelsh_language_2021&outputFormat=json&srs=EPSG%3A27700&srsName=EPSG%3A27700"
 //let url = "https://datamap.gov.wales/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typename=geonode%3Awelsh_by_lsoa&outputFormat=json&srs=EPSG%3A27700&srsName=EPSG%3A27700"
 
+// Generate choropleths from transformed coordinates
 d3.json(url).then(function(data) {
   let transformedGeoJSON = transformGeoJSONCoords(data);
 
@@ -172,7 +153,23 @@ d3.json(url).then(function(data) {
         fillOpacity: 0.5
       },
       onEachFeature: function (feature, layer) {
-          layer.bindPopup('<strong>' + feature.properties.lsoaname + '</strong><br>Percentage of Welsh Speakers: ' + feature.properties.percentage);
+        layer.on({
+          // Change opacity on mouseover/mouseout
+          mouseover: function(event) {
+            layer = event.target;
+            layer.setStyle({
+              fillOpacity: 0.9
+            });
+          },
+          mouseout: function(event) {
+            layer = event.target;
+            layer.setStyle({
+              fillOpacity: 0.5
+            });
+          }
+        });
+        // Give each LSOA a popup with information
+        layer.bindPopup('<h1>' + feature.properties.lsoaname + '</h1><br><h2>Welsh Speakers: <strong>' + feature.properties.percentage + '%</strong></h2>');
       }
     }).addTo(myMap);
     
@@ -201,8 +198,6 @@ d3.json(url).then(function(data) {
     div.innerHTML += "<ul>" + labels.join("") + "</ul>";
     return div;
   };
-
   // Adding the legend to the map
-  legend.addTo(myMap);  
-  
+  legend.addTo(myMap);
 });
