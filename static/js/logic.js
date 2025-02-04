@@ -18,10 +18,27 @@ function transformGeoJSONCoords(geojson) {
   console.log('Transformed GeoJSON:', geojson);
   return geojson;
 }
-
+/*
+let layersPrimary = {
+  ["English medium"]: new L.LayerGroup(), 
+  ["Welsh medium"]: new L.LayerGroup(), 
+  ["Dual stream"]: new L.LayerGroup(),
+  ["English with significant Welsh"]: new L.LayerGroup(),
+  Transitional: new L.LayerGroup()
+};
+*/
 let myMap = L.map('map', {
   center:[52.1307, -3.7837],
-  zoom: 8
+  zoom: 8,
+  /*
+  layers: [
+    layersPrimary["English medium"],
+    layersPrimary["Welsh medium"],
+    layersPrimary["Dual stream"],
+    layersPrimary["English with significant Welsh"],
+    layersPrimary.Transitional
+  ]
+    */
 });
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -29,26 +46,117 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   maxZoom: 19
 }).addTo(myMap);
 
+var markerClusterGroup = L.markerClusterGroup();
+myMap.addLayer(markerClusterGroup);
+
+
+let EngSub = L.featureGroup.subGroup(markerClusterGroup);
+let WelshSub = L.featureGroup.subGroup(markerClusterGroup);
+let DualSub = L.featureGroup.subGroup(markerClusterGroup);
+let EngSigWelshSub = L.featureGroup.subGroup(markerClusterGroup);
+let TransitionalSub = L.featureGroup.subGroup(markerClusterGroup);
+
+let icons = {
+  ["English medium"]: L.ExtraMarkers.icon({
+    icon: "ion-happy-outline",
+    iconColor: "white",
+    markerColor: "green",
+    shape: "circle"
+  }),
+  ["Welsh medium"]: L.ExtraMarkers.icon({
+    icon: "ion-happy-outline",
+    iconColor: "white",
+    markerColor: "red",
+    shape: "circle"
+  }),
+  ["Dual stream"]: L.ExtraMarkers.icon({
+    icon: "ion-ios-toggle",
+    iconColor: "white",
+    markerColor: "blue",
+    shape: "star"
+  }),
+  ["English with significant Welsh"]: L.ExtraMarkers.icon({
+    icon: "ion-chatbubbles",
+    iconColor: "black",
+    markerColor: "yellow",
+    shape: "star"
+  }),
+  Transitional: L.ExtraMarkers.icon({
+    icon: "ion-android-sync",
+    iconColor: "white",
+    markerColor: "pink",
+    shape: "star"
+  })
+};
+
+//let languagePrimary;
+
 let primarySchools = "./static/js/cymraeg_primary_schools.json";
 // Get the data with d3.
 d3.json(primarySchools).then(function(data) {
-console.log(data);
-
+// console.log(data);
+//if (data.features[i].properties.language == "English medium") {
+//  languagePrimary = ""
+//}
 // Create a new marker cluster group.
-let markers = L.markerClusterGroup();
-// Loop through the data.
-for (let i = 0; i < data.features.length; i++) {
-  // Set the data location property to a variable.
-  let location = [data.features[i].properties.lat, data.features[i].properties.lon];
-  // Add a new marker to the cluster group, and bind a popup.
-  let newMarker = L.marker(location).bindPopup(`${data.features[i].properties.name}<br>${data.features[i].properties.language}<br>${data.features[i].properties.town_name}`)
-  markers.addLayer(newMarker);
-  }
-  // Add our marker cluster layer to the map.
-  markers.addTo(myMap);
+  //let markers = L.markerClusterGroup();
+  // Loop through the data.
+  for (let i = 0; i < data.features.length; i++) {
+    // Set the data location property to a variable.
+    let location = [data.features[i].properties.lat, data.features[i].properties.lon];
+    // Add a new marker to the cluster group, and bind a popup.
+    // console.log(data.features[i].properties.language)
+    //L.marker(location, {icon: icons[data.features[i].properties.language]})
+    //.bindPopup(`${data.features[i].properties.name}<br>${data.features[i].properties.language}<br>${data.features[i].properties.town_name}`)
+    // markerClusterGroup.addLayer(newMarker);
+    if (data.features[i].properties.language.toLowerCase() === "english medium") {
+      L.marker(location, {icon: icons[data.features[i].properties.language]})
+      .bindPopup(`${data.features[i].properties.name}<br>${data.features[i].properties.language}<br>${data.features[i].properties.town_name}`)
+      .addTo(EngSub);
+    } else if (data.features[i].properties.language.toLowerCase() === "welsh medium") {
+      L.marker(location, {icon: icons[data.features[i].properties.language]})
+      .bindPopup(`${data.features[i].properties.name}<br>${data.features[i].properties.language}<br>${data.features[i].properties.town_name}`)
+      .addTo(WelshSub);
+    } else if (data.features[i].properties.language === "Dual stream") {
+      L.marker(location, {icon: icons[data.features[i].properties.language]})
+      .bindPopup(`${data.features[i].properties.name}<br>${data.features[i].properties.language}<br>${data.features[i].properties.town_name}`)
+      .addTo(DualSub);
+    } else if (data.features[i].properties.language === "English with significant Welsh") {
+      L.marker(location, {icon: icons[data.features[i].properties.language]})
+      .bindPopup(`${data.features[i].properties.name}<br>${data.features[i].properties.language}<br>${data.features[i].properties.town_name}`)
+      .addTo(EngSigWelshSub);
+    } else if (data.features[i].properties.language === "Transitional") {
+      L.marker(location, {icon: icons[data.features[i].properties.language]})
+      .bindPopup(`${data.features[i].properties.name}<br>${data.features[i].properties.language}<br>${data.features[i].properties.town_name}`)
+      .addTo(TransitionalSub);
+    } else {
+      console.log(data.features[i].properties)
+    }
+    }
+    // Add our marker cluster layer to the map.
+    markerClusterGroup.addTo(myMap);
 });
 
+myMap.addLayer(EngSub);
+myMap.addLayer(WelshSub);
+myMap.addLayer(DualSub);
+myMap.addLayer(EngSigWelshSub);
+myMap.addLayer(TransitionalSub);
+
+let overlays = {
+  "English Medium": EngSub,
+  "Welsh Medium": WelshSub,
+  "Dual Stream": DualSub,
+  "English with Significant Welsh": EngSigWelshSub,
+  "Transitional": TransitionalSub
+};
+
+L.control.layers(null, overlays).addTo(myMap);
+
+
+
 let url = "https://datamap.gov.wales/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typename=geonode%3Awelsh_language_2021&outputFormat=json&srs=EPSG%3A27700&srsName=EPSG%3A27700"
+//let url = "https://datamap.gov.wales/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typename=geonode%3Awelsh_by_lsoa&outputFormat=json&srs=EPSG%3A27700&srsName=EPSG%3A27700"
 
 d3.json(url).then(function(data) {
   let transformedGeoJSON = transformGeoJSONCoords(data);
@@ -67,7 +175,7 @@ d3.json(url).then(function(data) {
           layer.bindPopup('<strong>' + feature.properties.lsoaname + '</strong><br>Percentage of Welsh Speakers: ' + feature.properties.percentage);
       }
     }).addTo(myMap);
-    /*
+    
     // Need to adjust location of legend!
     // Set up the legend.
   let legend = L.control();
@@ -96,5 +204,5 @@ d3.json(url).then(function(data) {
 
   // Adding the legend to the map
   legend.addTo(myMap);  
-  */
+  
 });
