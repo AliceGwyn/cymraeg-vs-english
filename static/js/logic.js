@@ -143,12 +143,13 @@ const url2011 = "https://datamap.gov.wales/geoserver/ows?service=WFS&version=1.0
 const url2021 = "https://datamap.gov.wales/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&typename=geonode%3Awelsh_language_2021&outputFormat=json&srs=EPSG%3A27700&srsName=EPSG%3A27700";
 
 let legend;
+let geoJSON
 
 function display2021Data() {
   d3.json(url2021).then(function(data) {
     let transformedGeoJSON = transformGeoJSONCoords(data);
 
-      let geoJSON = L.choropleth(transformedGeoJSON, {
+      geoJSON = L.choropleth(transformedGeoJSON, {
         valueProperty: "percentage",
         scale: ["#00b140", "#c8102e"],
         steps: 12,
@@ -180,8 +181,6 @@ function display2021Data() {
       }).addTo(myMap);
       
       // Set up the legend.
-      if (legend instanceof L.control) {
-        myMap.removeControl(legend)}; 
       legend = L.control({position: "bottomright"});
       legend.onAdd = function() {
       let div = L.DomUtil.create("div", "info legend");
@@ -215,7 +214,7 @@ function display2011Data() {
   d3.json(url2011).then(function(data) {
     let transformedGeoJSON = transformGeoJSONCoords(data);
 
-      let geoJSON = L.choropleth(transformedGeoJSON, {
+      geoJSON = L.choropleth(transformedGeoJSON, {
         valueProperty: "Welsh",
         scale: ["#00b140", "#c8102e"],
         steps: 12,
@@ -247,8 +246,6 @@ function display2011Data() {
       }).addTo(myMap);
       
       // Set up the legend.
-      if (legend instanceof L.control) {
-        myMap.removeControl(legend)}; 
       legend = L.control({position: "bottomright"});
       legend.onAdd = function() {
       let div = L.DomUtil.create("div", "info legend");
@@ -280,7 +277,13 @@ function display2011Data() {
 
 // Add event listeners for dropdown change
 document.getElementById("options").addEventListener("change", function() {
-  let selectedYear = this.value; 
+  let selectedYear = this.value;
+  if (legend != undefined) {
+    console.log("Legend cleared")
+    myMap.removeControl(legend)};
+  if (geoJSON != undefined) {
+    console.log("GeoJSON cleared")
+    myMap.removeLayer(geoJSON)};
   if (selectedYear === "2011data") {
       display2011Data(); 
   } else {
