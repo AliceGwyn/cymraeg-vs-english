@@ -90,23 +90,23 @@ d3.json(primarySchools).then(function(data) {
     // Add markers to SubGroups based on language used
     if (data.features[i].properties.language.toLowerCase() === "english medium") {
       L.marker(location, {icon: icons[data.features[i].properties.language]})
-      .bindPopup(`${data.features[i].properties.name}<br>${data.features[i].properties.language}<br>${data.features[i].properties.town_name}`)
+      .bindPopup(`<h1>Name: ${data.features[i].properties.name}</h1><br><h2 style="color:green;">Language: ${data.features[i].properties.language}</h2><br><h2>Location: ${data.features[i].properties.town_name}</h2>`)
       .addTo(EngSub);
     } else if (data.features[i].properties.language.toLowerCase() === "welsh medium") {
       L.marker(location, {icon: icons[data.features[i].properties.language]})
-      .bindPopup(`<h1>Name: ${data.features[i].properties.name}</h1><br><h2 style="color:red;">Language: ${data.features[i].properties.language}<br>Location: ${data.features[i].properties.town_name}</h2>`)
+      .bindPopup(`<h1>Name: ${data.features[i].properties.name}</h1><br><h2 style="color:red;">Language: ${data.features[i].properties.language}</h2><br><h2>Location: ${data.features[i].properties.town_name}</h2>`)
       .addTo(WelshSub);
     } else if (data.features[i].properties.language === "Dual stream") {
       L.marker(location, {icon: icons[data.features[i].properties.language]})
-      .bindPopup(`<h1>Name: ${data.features[i].properties.name}</h1><br><h2 style="color:red;">Language: ${data.features[i].properties.language}<br>Location: ${data.features[i].properties.town_name}</h2>`)
+      .bindPopup(`<h1>Name: ${data.features[i].properties.name}</h1><br><h2 style="color:blue;">Language: ${data.features[i].properties.language}</h2><br><h2>Location: ${data.features[i].properties.town_name}</h2>`)
       .addTo(DualSub);
     } else if (data.features[i].properties.language === "English with significant Welsh") {
       L.marker(location, {icon: icons[data.features[i].properties.language]})
-      .bindPopup(`<h1>Name: ${data.features[i].properties.name}</h1><br><h2 style="color:red;">Language: ${data.features[i].properties.language}<br>Location: ${data.features[i].properties.town_name}</h2>`)
+      .bindPopup(`<h1>Name: ${data.features[i].properties.name}</h1><br><h2 style="color:goldenrod;">Language: ${data.features[i].properties.language}</h2><br><h2>Location: ${data.features[i].properties.town_name}</h2>`)
       .addTo(EngSigWelshSub);
     } else if (data.features[i].properties.language === "Transitional") {
       L.marker(location, {icon: icons[data.features[i].properties.language]})
-      .bindPopup(`<h1>Name: ${data.features[i].properties.name}</h1><br><h2 style="color:red;">Language: ${data.features[i].properties.language}<br>Location: ${data.features[i].properties.town_name}</h2>`)
+      .bindPopup(`<h1>Name: ${data.features[i].properties.name}</h1><br><h2 style="color:purple;">Language: ${data.features[i].properties.language}</h2><br><h2>Location: ${data.features[i].properties.town_name}</h2>`)
       .addTo(TransitionalSub);
     } else {
       console.log(data.features[i].properties)
@@ -175,7 +175,7 @@ d3.json(url).then(function(data) {
     
     // Need to adjust location of legend!
     // Set up the legend.
-  let legend = L.control();
+  let legend = L.control({position: "bottomright"});
   legend.onAdd = function() {
     let div = L.DomUtil.create("div", "info legend");
     let limits = geoJSON.options.limits;
