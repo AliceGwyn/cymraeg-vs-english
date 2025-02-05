@@ -303,7 +303,7 @@ function displayCompData() {
             }
           });
           // Give each LSOA a popup with information
-          layer.bindPopup('<h1>' + feature.properties.lsoaname + '</h1><br><h2>Welsh Speakers: <strong>' + feature.properties.pchange + '%</strong></h2>');
+          layer.bindPopup('<h1>' + feature.properties.lsoaname + '</h1><br><h2>Change in Welsh Speakers: <strong>' + feature.properties.pchange + '%</strong></h2>');
         }
       }).addTo(myMap);
       
