@@ -14,7 +14,7 @@ We were able to show that areas of Wales with significant early education in Wel
 # HOW TO RUN
 To run this on your own computer, first make sure you have node.js installed on your computer. You can download it at: https://nodejs.org/en Then, open a terminal and type in "npm install proj4" (without quotes) and hit enter. This should install the proj4 library and allow you to run our code.From there, open our project in VisualStudio Code and right click on index.html to open in Live Server. This should bring up our web page. You'll be able to choose to view either the 2011 or 2021 data on the percentages of Welsh speakers using the dropdown menu right under the Welsh flag. The data is shown as a choropleth using LSOAs (Lower Layer Super Output Areas), statistical areas that each have 1000-3000 residents. You can also see markers representing all the primary schools in Wales. You can filter these by instructional medium, as explained to the left of the map.
 
-Alternatively, you can visit (INSERT URL HERE AFTER WE DEPLOY) to view our page.
+Alternatively, you can visit (https://github.com/AliceGwyn/cymraeg-vs-english/deployments/github-pages) to view our page.
 
 
 # Ways we would eventually have improved this project
